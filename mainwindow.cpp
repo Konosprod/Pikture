@@ -5,6 +5,7 @@
  *- Actions sur l'image
  *- Lecture des métadonnées des images / Modifications si possibles
  *- Edition de préférences
+ *- Lecture de préférences
  *- Mode diaporama
  *- Différentes icônes
  *- PPA ?
@@ -58,7 +59,6 @@ mainWindow::mainWindow(QWidget *parent) :
         loadFileList(args);
     }
 
-    //sc->setWidgetResizable(true);
     sc->setWidget(m_label);
     sc->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     sc->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -295,6 +295,27 @@ void mainWindow::openFile()
     }
 }
 
+/*Fonction qui permet de créer un diaporama
+*/
+void mainWindow::diaporama()
+{
+
+}
+
+/*Fonction qui permet d'éditer les préférences
+*/
+void mainWindow::preferences()
+{
+
+}
+
+/*Fonction qui permet de récupérer les métadonnées de l'image courrante
+ **/
+void mainWindow::fileInfo()
+{
+
+}
+
 
 /*Fonction qui créer les connexions entres les différents composants
  */
@@ -302,7 +323,7 @@ void mainWindow::setupConnexions()
 {
     connect(ui->actionDiaporama, SIGNAL(triggered()), this, SLOT(diaporama()));
     connect(ui->actionInformations_fichier, SIGNAL(triggered()), SLOT(fileInfo()));
-    connect(ui->actionPr_f_rences, SIGNAL(triggered()), SLOT(preferences());
+    connect(ui->actionPr_f_rences, SIGNAL(triggered()), SLOT(preferences()));
     connect(ui->actionOuvrir, SIGNAL(triggered()), this, SLOT(openFile()));
     connect(ui->actionQuitter, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(this, SIGNAL(imageChanged()), this, SLOT(updateWindow()));
