@@ -64,6 +64,7 @@ mainWindow::mainWindow(QWidget *parent) :
     sc->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     this->setCentralWidget(sc);
     this->resize(800, 600);
+    m_oldSize = this->size();
 
     setupConnexions();
 }
@@ -73,6 +74,7 @@ mainWindow::mainWindow(QWidget *parent) :
 void mainWindow::resizeEvent(QResizeEvent * event)
 {
     QMainWindow::resizeEvent(event);
+    m_oldSize = this->size();
     int w = centralWidget()->width();
     int h = centralWidget()->height();
 
@@ -86,16 +88,13 @@ void mainWindow::resizeEvent(QResizeEvent * event)
         QFileInfo fi(m_files.at(m_current));
         if((fi.completeBaseName() != ".gif") && (fi.completeSuffix() != ".GIF"))
         {
-            if(((float)m_image->width()/w > 1.0) && ((float)m_image->height()/h > 1.0))
+            if(((float)m_pixmap.width()/w > 1.0) && ((float)m_pixmap.height()/h > 1.0))
             {
-                m_label->setPixmap(QPixmap::fromImage(m_image->scaled(QSize(w, h), Qt::KeepAspectRatioByExpanding)));
-                m_label->adjustSize();
+                m_pixmap = m_pixmap.scaled(QSize(w, h), Qt::KeepAspectRatioByExpanding);
             }
-            else
-            {
-                m_label->setPixmap(QPixmap::fromImage(*m_image));
-                m_label->adjustSize();
-            }
+
+            m_label->setPixmap(m_pixmap);
+            m_label->adjustSize();
         }
     }
 }
@@ -169,7 +168,7 @@ void mainWindow::keyPressEvent(QKeyEvent *event)
                 m_current = 0;
             }
             drawImage();
-            //event->accept();
+            event->accept();
         }
         else if(event->key() == Qt::Key_W)
         {
@@ -183,7 +182,7 @@ void mainWindow::keyPressEvent(QKeyEvent *event)
             }
 
             drawImage();
-            //event->accept();
+            event->accept();
         }
         else
         {
@@ -196,25 +195,24 @@ void mainWindow::keyPressEvent(QKeyEvent *event)
 void mainWindow::drawImage()
 {
     QFileInfo fi(m_files.at(m_current));
-
     if((fi.completeBaseName() != ".gif") && (fi.completeBaseName() != ".GIF"))
     {
         m_image->~QImage();
         m_image = new QImage();
+
         if(m_image->load(m_files.at(m_current)))
         {
+            m_pixmap = QPixmap::fromImage(*m_image);
             m_label->clear();
-            m_label->setPixmap(QPixmap::fromImage(*m_image));
+            m_label->setPixmap(m_pixmap);
+
             if(((float)m_image->width()/this->centralWidget()->width() > 1.0) && ((float)m_image->height()/this->centralWidget()->height() > 1.0))
             {
-                m_label->setPixmap(QPixmap::fromImage(m_image->scaled(QSize(this->centralWidget()->width(), this->centralWidget()->height()), Qt::KeepAspectRatioByExpanding)));
-                m_label->adjustSize();
+                m_pixmap = m_pixmap.scaled(QSize(this->centralWidget()->width(), this->centralWidget()->height()), Qt::KeepAspectRatioByExpanding);
             }
-            else
-            {
-                m_label->setPixmap(QPixmap::fromImage(*m_image));
-                m_label->adjustSize();
-            }
+
+            m_label->setPixmap(m_pixmap);
+            m_label->adjustSize();
         }
         else
         {
@@ -252,6 +250,46 @@ QStringList mainWindow::getImagesDir(QString s)
     return ret;
 }
 
+/*Fonction qui sert à rendre en plein écran avec un double-clic de la souris
+ */
+void mainWindow::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QWidget::mouseDoubleClickEvent(e);
+    if(isFullScreen())
+    {
+        this->setWindowState(Qt::WindowNoState);
+        this->resize(m_oldSize);
+    }
+    else
+    {
+        m_oldSize = this->size();
+        this->setWindowState(Qt::WindowFullScreen);
+    }
+}
+
+
+/*Fonction qui intercepte les changements sur la fenêtre comme le passage en fullscreen
+ *elle permet de désactiver les menu et la barre d'outils
+ */
+void mainWindow::changeEvent(QEvent *e)
+{
+    QWidget::changeEvent(e);
+    if(e->type() == QEvent::WindowStateChange)
+    {
+        if(this->isFullScreen())
+        {
+            ui->statusBar->hide();
+            ui->menuBar->hide();
+            ui->mainToolBar->hide();
+        }
+        else
+        {
+            ui->statusBar->show();
+            ui->menuBar->show();
+            ui->mainToolBar->show();
+        }
+    }
+}
 
 /*Fonction qui est chargée de mettre à jour les différentes informations de la fenêtre
  */
@@ -310,9 +348,73 @@ void mainWindow::preferences()
 }
 
 /*Fonction qui permet de récupérer les métadonnées de l'image courrante
- **/
+ */
 void mainWindow::fileInfo()
 {
+
+}
+
+/*Fonction qui permet de zoomer sur l'image courrante
+ */
+void mainWindow::zoomIn()
+{
+
+}
+
+/*Fonction qui permet de dézoomer sur l'image courrante
+ */
+void mainWindow::zoomOut()
+{
+
+}
+
+/*Fonction qui permet de faire un miroir horizontal sur l'image
+ */
+void mainWindow::mirorHorizontal()
+{
+
+}
+
+/*Fonction qui permet de faire un miroir vertical sur l'image
+ */
+void mainWindow::mirorVertical()
+{
+}
+
+/*Fonction qui permet de faire une rotation de +90° de l'image
+ */
+void mainWindow::rightRotate()
+{
+    QTransform* t = new QTransform();
+
+    m_label->clear();
+    m_pixmap = m_pixmap.transformed(t->rotate(90));
+
+    if(((float)m_pixmap.width()/this->centralWidget()->width() > 1.0) && ((float)m_pixmap.height()/this->centralWidget()->height() > 1.0))
+    {
+        m_pixmap = m_pixmap.scaled(QSize(this->centralWidget()->width(), this->centralWidget()->height()), Qt::KeepAspectRatioByExpanding);
+    }
+
+    m_label->setPixmap(m_pixmap);
+    m_label->adjustSize();
+}
+
+/*Fonction qui permet de faire une rotation de -90° de l'image
+ */
+void mainWindow::leftRotate()
+{
+    QTransform* t = new QTransform();
+
+    m_label->clear();
+    m_pixmap = m_pixmap.transformed(t->rotate(-90));
+
+    if(((float)m_pixmap.width()/this->centralWidget()->width() > 1.0) && ((float)m_pixmap.height()/this->centralWidget()->height() > 1.0))
+    {
+        m_pixmap = m_pixmap.scaled(QSize(this->centralWidget()->width(), this->centralWidget()->height()), Qt::KeepAspectRatioByExpanding);
+    }
+
+    m_label->setPixmap(m_pixmap);
+    m_label->adjustSize();
 
 }
 
@@ -321,6 +423,8 @@ void mainWindow::fileInfo()
  */
 void mainWindow::setupConnexions()
 {
+    connect(ui->actionRotation_anti_horaire, SIGNAL(triggered()), this, SLOT(leftRotate()));
+    connect(ui->actionRotation_horaire, SIGNAL(triggered()), this, SLOT(rightRotate()));
     connect(ui->actionDiaporama, SIGNAL(triggered()), this, SLOT(diaporama()));
     connect(ui->actionInformations_fichier, SIGNAL(triggered()), SLOT(fileInfo()));
     connect(ui->actionPr_f_rences, SIGNAL(triggered()), SLOT(preferences()));

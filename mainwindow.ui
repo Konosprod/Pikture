@@ -34,14 +34,29 @@
     <property name="title">
      <string>Edition</string>
     </property>
-    <addaction name="actionInformations_fichier"/>
+    <widget class="QMenu" name="menuTransformations">
+     <property name="title">
+      <string>Transformations</string>
+     </property>
+     <addaction name="actionZoom_avant"/>
+     <addaction name="actionZoom_arriere"/>
+     <addaction name="separator"/>
+     <addaction name="actionMirroir_vertical"/>
+     <addaction name="actionMiroir_horizontal"/>
+     <addaction name="separator"/>
+     <addaction name="actionRotation_horaire"/>
+     <addaction name="actionRotation_anti_horaire"/>
+    </widget>
     <addaction name="actionDiaporama"/>
+    <addaction name="separator"/>
+    <addaction name="menuTransformations"/>
    </widget>
    <widget class="QMenu" name="menuOutils">
     <property name="title">
      <string>Outils</string>
     </property>
     <addaction name="actionPr_f_rences"/>
+    <addaction name="actionInformations_fichier"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuEdition"/>
@@ -79,6 +94,36 @@
   <action name="actionInformations_fichier">
    <property name="text">
     <string>Informations fichier</string>
+   </property>
+  </action>
+  <action name="actionZoom_avant">
+   <property name="text">
+    <string>Zoom avant</string>
+   </property>
+  </action>
+  <action name="actionZoom_arriere">
+   <property name="text">
+    <string>Zoom arrière</string>
+   </property>
+  </action>
+  <action name="actionMirroir_vertical">
+   <property name="text">
+    <string>Miroir vertical</string>
+   </property>
+  </action>
+  <action name="actionMiroir_horizontal">
+   <property name="text">
+    <string>Miroir horizontal</string>
+   </property>
+  </action>
+  <action name="actionRotation_horaire">
+   <property name="text">
+    <string>Rotation horaire</string>
+   </property>
+  </action>
+  <action name="actionRotation_anti_horaire">
+   <property name="text">
+    <string>Rotation anti horaire</string>
    </property>
   </action>
  </widget>
